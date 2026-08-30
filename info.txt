@@ -1,0 +1,93 @@
++----------------+       +----------------+       +----------------+
+|      User      |       |    Profile     |       |   Property     |
++----------------+       +----------------+       +----------------+
+| id (PK)        |<------| user (OneToOne)|       | id (PK)        |
+| email          |       | avatar         |       | name           |
+| password       |       | bio            |       | description    |
+| first_name     |       | business_name  |       | address        |
+| last_name      |       | position       |       | city           |
+| phone          |       | salary         |       | province       |
+| address        |       | passport_number|       | price_per_night|
+| date_of_birth  |       | nationality    |       | max_guests     |
+| role           |       +----------------+       | services       |
+| is_active      |                                | owner (FK User)|
+| is_staff       |                                | is_active      |
+| created_at     |                                | created_at     |
+| updated_at     |                                | updated_at     |
++----------------+                                +----------------+
+        | 1                                        | 1
+        |                                          |
+        | (owner)                                  | (rooms)
+        |                                          |
+        |                                          V
+        |                                +----------------+
+        |                                |      Room      |
+        |                                +----------------+
+        |                                | id (PK)        |
+        |                                | property (FK)  |
+        |                                | room_number    |
+        |                                | room_type      |
+        |                                | capacity       |
+        |                                | price_per_night|
+        |                                | description    |
+        |                                | amenities      |
+        |                                | is_available   |
+        |                                +----------------+
+        |                                          | 1
+        |                                          |
+        |                                          | (bookings)
+        |                                          |
+        |                                          V
+        |                                +----------------+
+        |                                |    Booking     |
+        |                                +----------------+
+        |                                | id (PK)        |
+        |                                | guest (FK User)|
+        |                                | room (FK Room) |
+        |                                | property (FK)  |
+        |                                | check_in       |
+        |                                | check_out      |
+        |                                | number_of_guests|
+        |                                | status         |
+        |                                | total_price    |
+        |                                | notes          |
+        |                                +----------------+
+        |
+        | (reviews)
+        V
++----------------+       +----------------+
+|     Review     |       |    Payment     |
++----------------+       +----------------+
+| id (PK)        |       | id (PK)        |
+| user (FK User) |       | booking (FK)   |
+| property (FK)  |       | amount         |
+| room (FK)      |       | payment_date   |
+| rating         |       | method         |
+| comment        |       | reference      |
+| created_at     |       | created_at     |
++----------------+       +----------------+
+
+
+
+Explicación de relaciones
+User (1) --- (1) Profile: Un usuario tiene exactamente un perfil extendido; el perfil pertenece a un único usuario. Se implementa con OneToOneField.
+
+User (1) --- (N) Property: Un usuario (con rol owner/admin) puede poseer varias propiedades. Una propiedad pertenece a un único propietario (User). Se implementa con ForeignKey desde Property a User.
+
+Property (1) --- (N) Room: Una propiedad puede tener múltiples habitaciones; una habitación pertenece a una sola propiedad. Se implementa con ForeignKey desde Room a Property.
+
+User (1) --- (N) Booking (como guest): Un usuario (huésped) puede hacer varias reservas; una reserva pertenece a un único huésped. ForeignKey desde Booking a User con related_name='bookings'.
+
+Room (1) --- (N) Booking: Una habitación puede estar involucrada en varias reservas (en diferentes fechas); una reserva puede referirse a una habitación específica (opcional). ForeignKey desde Booking a Room (null=True, blank=True).
+
+Property (1) --- (N) Booking: Una propiedad puede tener varias reservas (si se reserva la propiedad completa); una reserva puede referirse a una propiedad completa (opcional). ForeignKey desde Booking a Property (null=True, blank=True). Se restringe que una reserva tenga o room o property, no ambos.
+
+Booking (1) --- (N) Payment: Una reserva puede tener múltiples pagos (ej. depósito, pago total); un pago pertenece a una única reserva. Se implementará en la app payments con ForeignKey a Booking.
+
+User (1) --- (N) Review: Un usuario puede dejar varias reseñas; una reseña es escrita por un usuario. ForeignKey a User.
+
+Property (1) --- (N) Review: Una propiedad puede tener varias reseñas; una reseña puede referirse a una propiedad o a una habitación (opcional). Similar a Booking, tendrá FKs opcionales a Property y Room.
+
+User (1) --- (N) Task: Un usuario (staff) puede tener varias tareas asignadas; una tarea es asignada a un miembro del staff. Se implementará en tasks.
+
+Estas relaciones garantizan la integridad y permiten consultas eficientes. En el código, usamos related_name para acceder inversamente (ej. user.bookings da todas las reservas del huésped, property.rooms da habitaciones de la propiedad).
