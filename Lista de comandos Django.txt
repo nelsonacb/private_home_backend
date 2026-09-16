@@ -1,0 +1,22 @@
+pip install virtualenv // Instala el entorno virtual de Python
+virtualenv venv // Crea la carpeta del entorno virtual
+venv\Scripts\activate // Activar el entorno virtual
+pip install Django // Instala la dependencia de Django
+django-admin --version // Asegurarme de tener instalado Django
+django-admin startproject mysite . // Crear proyecto de Django sin crear nueva carpeta 
+python manage.py runserver (puerto opcional 8000 por defecto) // Correr el proyecto
+python manage.py startapp app_name // Crea una aplicación o funcionalidad en Django
+python manage.py makemigrations // Crea las migraciones
+python manage.py migrate // Ejecuta las migraciones para crear las tablas
+python manage.py createsuperuser // Crear el user, email y password para acceder al Django Admin
+pip freeze > requirements.txt // Crear el requeriments.txt es similar a el package.json. Dice las dependencias instaladas.
+pip install -r requirements.txt // Instalar dependencias
+pip install django-extensions // Instalar extensiones de Django, adicionar al INSTALLED_APPS en settings.py y correr python manage.py show_urls para listar todos los endpoints
+
+
+
+
+
+
+
+
